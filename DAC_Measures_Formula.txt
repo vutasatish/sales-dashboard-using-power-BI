@@ -1,0 +1,50 @@
+1. Average Order Value = [Total Sales] / [Total Transactions]
+
+2. Top Selling Product (by Revenue) = 
+VAR SummaryTable =
+    SUMMARIZE(
+        Transactions,
+        Transactions[product_category],
+        Transactions[product_type],
+        "Revenue",
+            SUMX(
+                Transactions,
+                Transactions[unit_price] * Transactions[transaction_qty]
+            )
+    )
+VAR TopProduct =
+    TOPN(1, SummaryTable, [Revenue], DESC)
+RETURN
+    CONCATENATEX(
+        TopProduct,
+        Transactions[product_category] & " - " & Transactions[product_type],
+        ", "
+    )
+
+3. Top Selling Product (by Volume) = 
+VAR ProductTable =
+    ADDCOLUMNS(
+        VALUES(Transactions[product_category]),
+        "TotalQty", [Total Transactions]
+    )
+VAR TopProduct =
+    TOPN(
+        1,
+        ProductTable,
+        [TotalQty],
+        DESC
+    )
+RETURN
+    CONCATENATEX(
+        TopProduct,
+        Transactions[product_category],
+        ", "
+    )
+
+4. Total Quantity = SUM('Transactions'[transaction_qty])
+
+5. Total Sales = SUMX('Transactions', 'Transactions'[transaction_qty] * 'Transactions'[unit_price]) 
+
+6. Total Transactions = DISTINCTCOUNT('Transactions'[transaction_id])
+
+7. 
